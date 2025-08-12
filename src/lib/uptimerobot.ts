@@ -14,26 +14,17 @@ export type GetMonitorsResponse = {
   monitors: UptimeRobotMonitor[];
 };
 
-export async function fetchMonitors(apiKey: string): Promise<UptimeRobotMonitor[]> {
-  const body = new URLSearchParams();
-  body.set("api_key", apiKey);
-  body.set("format", "json");
-
-  const res = await fetch("https://api.uptimerobot.com/v2/getMonitors", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body,
+export async function fetchMonitors(): Promise<UptimeRobotMonitor[]> {
+  // Calls Supabase Edge Function that uses a stored secret for the API key
+  const res = await fetch("/functions/v1/get-monitors", {
+    method: "GET",
   });
 
   if (!res.ok) {
-    throw new Error(`UptimeRobot error: ${res.status}`);
+    throw new Error(`Edge function error: ${res.status}`);
   }
 
-  const data = (await res.json()) as GetMonitorsResponse & { error?: { message?: string } };
-  if ((data as any).error) {
-    throw new Error((data as any).error?.message || "Unknown UptimeRobot error");
-  }
+  const data = (await res.json()) as GetMonitorsResponse;
   return data.monitors || [];
 }
+
