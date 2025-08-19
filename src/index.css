@@ -8,93 +8,65 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 346.8 77.2% 49.8%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 346.8 77.2% 49.8%;
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-
-    /* Brand & Effects */
-    --brand: 262 83% 62%; /* violet */
-    --brand-glow: 262 83% 70%;
-    --surface-elev-1: 222 50% 6%;
-    --surface-elev-2: 222 45% 8%;
+    /* Chat specific colors */
+    --chat-bg: 240 10% 3.9%;
+    --message-bg: 240 3.7% 15.9%;
+    --message-own: 346.8 77.2% 49.8%;
+    --message-other: 240 3.7% 15.9%;
+    --header-bg: 240 5.9% 10%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(348, 10%, 49%), hsl(0, 2%, 11%));
+    --gradient-surface: linear-gradient(135deg, hsl(240 3.7% 15.9%), hsl(240 5.9% 10%));
+    --gradient-bg: linear-gradient(135deg, hsl(240 10% 3.9%), hsl(240 5.9% 10%));
+    
+    /* Shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(240 10% 3.9% / 0.8);
+    --shadow-glow: 0 0 20px hsla(350, 6%, 21%, 0.3);
+    --shadow-message: 0 2px 8px hsl(240 10% 3.9% / 0.6);
   }
 
   .dark {
-    --background: 230 60% 6%;
-    --foreground: 210 40% 98%;
-
-    --card: 230 60% 8%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 230 60% 6%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 230 60% 6%;
-
-    --secondary: 222 35% 14%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 222 35% 14%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 222 35% 14%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 222 32% 18%;
-    --input: 222 32% 18%;
-    --ring: 262 83% 62%;
-
-    --sidebar-background: 230 60% 8%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 40% 10%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 230 32% 12%;
-    --sidebar-ring: 262 83% 62%;
-
-    /* Brand in dark */
-    --brand: 262 83% 62%;
-    --brand-glow: 262 83% 70%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 346.8 77.2% 49.8%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 346.8 77.2% 49.8%;
   }
 }
 
@@ -105,16 +77,77 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    background-image: radial-gradient(800px 400px at var(--mx,50%) var(--my,10%), hsl(var(--brand)/0.12), transparent),
-      radial-gradient(600px 300px at 80% -10%, hsl(var(--brand-glow)/0.12), transparent);
-    background-attachment: fixed;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 }
 
 @layer utilities {
-  .story-link {
-    @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-brand after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+  .gradient-primary {
+    background: var(--gradient-primary);
   }
-  .hover-scale { @apply transition-transform duration-200 hover:scale-105; }
-  .pulse { @apply animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]; }
+  
+  .gradient-surface {
+    background: var(--gradient-surface);
+  }
+  
+  .gradient-bg {
+    background: var(--gradient-bg);
+  }
+  
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .shadow-message {
+    box-shadow: var(--shadow-message);
+  }
+  
+  .glass-effect {
+    backdrop-filter: blur(20px);
+    background: hsl(var(--background) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.2);
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* For Chrome, Edge, Safari */
+.flex-1::-webkit-scrollbar {
+  width: 1px;
+}
+
+.flex-1::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.5); /* Adjust color */
+  border-radius: 10px;
+}
+
+.flex-1::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* For Firefox */
+.flex-1 {
+  scrollbar-width: thin;       /* Makes it thinner */
+  scrollbar-color: #666 transparent; /* Thumb color + track color */
 }
