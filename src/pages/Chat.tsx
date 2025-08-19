@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { encryptMessage, decryptMessage, getUserEncryptionKey } from '@/lib/encryption';
 import { AIChatSidebar } from '@/components/AIChatSidebar';
 import { ChatHeader } from '@/components/chat/ChatHeader';
 import { MessagesList } from '@/components/chat/MessagesList';
@@ -34,6 +35,7 @@ const Chat = ({ currentUser }: ChatProps) => {
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [messageOffset, setMessageOffset] = useState(0);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [encryptionKey, setEncryptionKey] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -61,6 +63,12 @@ const Chat = ({ currentUser }: ChatProps) => {
   } = useWebRTC({ currentUser });
 
   useEffect(() => {
+    const initializeEncryption = async () => {
+      const key = await getUserEncryptionKey(currentUser);
+      setEncryptionKey(key);
+    };
+    
+    initializeEncryption();
     fetchMessages();
     setupRealtimeSubscription();
     
@@ -75,7 +83,7 @@ const Chat = ({ currentUser }: ChatProps) => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
     scrollToBottom();
@@ -98,10 +106,19 @@ const Chat = ({ currentUser }: ChatProps) => {
         variant: "destructive"
       });
     } else {
-      const reversedData = (data || []).reverse().map(message => ({
-        ...message,
-        status: (message.sender_name === currentUser ? 'seen' : 'received') as 'delivered' | 'received' | 'seen'
+      const decryptedMessages = await Promise.all((data || []).map(async (message) => {
+        let decryptedContent = message.content;
+        if (message.content && encryptionKey) {
+          decryptedContent = await decryptMessage(message.content, encryptionKey);
+        }
+        return {
+          ...message,
+          content: decryptedContent,
+          status: (message.sender_name === currentUser ? 'seen' : 'received') as 'delivered' | 'received' | 'seen'
+        };
       }));
+      
+      const reversedData = decryptedMessages.reverse();
       if (loadMore) {
         setMessages(prev => [...reversedData, ...prev]);
         setMessageOffset(prev => prev + limit);
@@ -129,8 +146,12 @@ const Chat = ({ currentUser }: ChatProps) => {
           schema: 'public',
           table: 'messages'
         },
-        (payload) => {
+        async (payload) => {
           const newMessage = payload.new as Message;
+          // Decrypt the content if it exists and we have the key
+          if (newMessage.content && encryptionKey) {
+            newMessage.content = await decryptMessage(newMessage.content, encryptionKey);
+          }
           // Set status for messages
           if (newMessage.sender_name === currentUser) {
             newMessage.status = 'delivered';
@@ -152,27 +173,38 @@ const Chat = ({ currentUser }: ChatProps) => {
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !encryptionKey) return;
 
     setIsLoading(true);
-    const { error } = await supabase
-      .from('messages')
-      .insert({
-        sender_name: currentUser,
-        content: newMessage,
-        message_type: 'text'
-      });
+    try {
+      // Encrypt the message before sending
+      const encryptedContent = await encryptMessage(newMessage, encryptionKey);
+      
+      const { error } = await supabase
+        .from('messages')
+        .insert({
+          sender_name: currentUser,
+          content: encryptedContent,
+          message_type: 'text'
+        });
 
-    if (error) {
+      if (error) {
+        toast({
+          title: "Send Failed",
+          description: "Message could not be delivered",
+          variant: "destructive"
+        });
+      } else {
+        // Keep focus and clear message in one go
+        inputRef.current?.focus();
+        setNewMessage('');
+      }
+    } catch (encryptError) {
       toast({
-        title: "Send Failed",
-        description: "Message could not be delivered",
+        title: "Encryption Failed",
+        description: "Could not encrypt message",
         variant: "destructive"
       });
-    } else {
-      // Keep focus and clear message in one go
-      inputRef.current?.focus();
-      setNewMessage('');
     }
     setIsLoading(false);
   };
