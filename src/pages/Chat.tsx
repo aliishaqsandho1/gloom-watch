@@ -109,8 +109,7 @@ const Chat = ({ currentUser }: ChatProps) => {
     } else {
       const decryptedMessages = await Promise.all((data || []).map(async (message) => {
         let decryptedContent = message.content;
-        // Only try to decrypt if content exists and looks encrypted (contains base64 characters)
-        if (message.content && key && message.content.length > 20 && /^[A-Za-z0-9+/=]+$/.test(message.content)) {
+        if (message.content) {
           try {
             decryptedContent = await decryptMessage(message.content, key);
           } catch (decryptError) {
@@ -162,8 +161,7 @@ const Chat = ({ currentUser }: ChatProps) => {
         },
         async (payload) => {
           const newMessage = payload.new as Message;
-          // Decrypt the content if it exists and we have the key
-          if (newMessage.content && encryptionKey && newMessage.content.length > 20 && /^[A-Za-z0-9+/=]+$/.test(newMessage.content)) {
+          if (newMessage.content) {
             try {
               newMessage.content = await decryptMessage(newMessage.content, encryptionKey);
             } catch (decryptError) {
