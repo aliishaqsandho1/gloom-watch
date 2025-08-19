@@ -66,11 +66,12 @@ const Chat = ({ currentUser }: ChatProps) => {
     const initializeEncryption = async () => {
       const key = await getUserEncryptionKey(currentUser);
       setEncryptionKey(key);
+      // Only fetch messages after encryption key is ready
+      await fetchMessagesWithKey(key);
+      setupRealtimeSubscription();
     };
     
     initializeEncryption();
-    fetchMessages();
-    setupRealtimeSubscription();
     
     // Check online status
     const handleOnline = () => setIsOnline(true);
@@ -89,7 +90,7 @@ const Chat = ({ currentUser }: ChatProps) => {
     scrollToBottom();
   }, [messages]);
 
-  const fetchMessages = async (loadMore = false) => {
+  const fetchMessagesWithKey = async (key: string, loadMore = false) => {
     const limit = 20;
     const offset = loadMore ? messageOffset : 0;
     
@@ -108,8 +109,15 @@ const Chat = ({ currentUser }: ChatProps) => {
     } else {
       const decryptedMessages = await Promise.all((data || []).map(async (message) => {
         let decryptedContent = message.content;
-        if (message.content && encryptionKey) {
-          decryptedContent = await decryptMessage(message.content, encryptionKey);
+        // Only try to decrypt if content exists and looks encrypted (contains base64 characters)
+        if (message.content && key && message.content.length > 20 && /^[A-Za-z0-9+/=]+$/.test(message.content)) {
+          try {
+            decryptedContent = await decryptMessage(message.content, key);
+          } catch (decryptError) {
+            console.warn('Failed to decrypt message:', message.id, decryptError);
+            // Keep original content if decryption fails (likely old unencrypted message)
+            decryptedContent = message.content;
+          }
         }
         return {
           ...message,
@@ -130,9 +138,15 @@ const Chat = ({ currentUser }: ChatProps) => {
     }
   };
 
+  const fetchMessages = async (loadMore = false) => {
+    if (encryptionKey) {
+      return fetchMessagesWithKey(encryptionKey, loadMore);
+    }
+  };
+
   const loadMoreMessages = () => {
-    if (hasMoreMessages && !isLoading) {
-      fetchMessages(true);
+    if (hasMoreMessages && !isLoading && encryptionKey) {
+      fetchMessagesWithKey(encryptionKey, true);
     }
   };
 
@@ -149,8 +163,12 @@ const Chat = ({ currentUser }: ChatProps) => {
         async (payload) => {
           const newMessage = payload.new as Message;
           // Decrypt the content if it exists and we have the key
-          if (newMessage.content && encryptionKey) {
-            newMessage.content = await decryptMessage(newMessage.content, encryptionKey);
+          if (newMessage.content && encryptionKey && newMessage.content.length > 20 && /^[A-Za-z0-9+/=]+$/.test(newMessage.content)) {
+            try {
+              newMessage.content = await decryptMessage(newMessage.content, encryptionKey);
+            } catch (decryptError) {
+              console.warn('Failed to decrypt real-time message:', newMessage.id, decryptError);
+            }
           }
           // Set status for messages
           if (newMessage.sender_name === currentUser) {
